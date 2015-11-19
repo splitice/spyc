@@ -252,6 +252,9 @@ class Spyc {
      * @param $indent The indent of the current node
      */
   private function _yamlize($key,$value,$indent, $previous_key = -1, $first_key = 0, $source_array = null) {
+      if(is_object($value)){
+          $value = (array)$value;
+      }
     if (is_array($value)) {
       if (empty ($value))
         return $this->_dumpNode($key, array(), $indent, $previous_key, $first_key, $source_array);
@@ -353,7 +356,7 @@ class Spyc {
       return sprintf ("'%s'", $value);
     }
     if (strpos($value, "\n") === false && strpos($value, '"') === false) {
-      return sprintf ('"%s"', $value);
+      return sprintf ('"%s"', str_replace('\\','\\\\',$value));
     }
     $exploded = explode("\n",$value);
     $newValue = '|';
@@ -381,7 +384,7 @@ class Spyc {
       $value   = ">\n".$indent.$wrapped;
     } else {
       if ($this->setting_dump_force_quotes && is_string ($value) && $value !== self::REMPTY)
-        $value = '"' . $value . '"';
+        $value = '"' . str_replace('\\','\\\\',$value) . '"';
     }
 
 
